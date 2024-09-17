@@ -7,8 +7,8 @@ class Persona:
         self.__edad = edad
 
 
-    def asignar_edad(self, edad):
-        self.__edad = edad
+    def asignar_edad(self, age):
+        self.__edad = age
 
     def asignar_nombre(self, nombre):
         self.__nombre = nombre
