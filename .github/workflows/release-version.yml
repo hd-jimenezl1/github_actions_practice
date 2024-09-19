@@ -6,6 +6,8 @@ on:
 
 jobs:
     job1:
+        permissions:
+          contents: write
         name: Ejecutar Pruebas Unitarias
         runs-on: ubuntu-latest
         if: ${{ contains(github.event.head_commit.message, '(liberar version)') }}
