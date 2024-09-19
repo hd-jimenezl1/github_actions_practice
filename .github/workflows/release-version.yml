@@ -19,7 +19,7 @@ jobs:
           if: ${{ success() }}
           uses: actions/setup-python@v4
           with:
-              python-version: '3.7'
+              python-version: '3.12'
 
         - name: Instalacion de librerias y dependencias
           if: ${{ success() }}
