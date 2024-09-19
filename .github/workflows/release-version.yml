@@ -54,7 +54,7 @@ jobs:
 
         - name: Correr pruebas
           if: ${{ success() }}
-          run: python -m unittest discover -s test --verbose
+          run: python -m unittest -v test/modeltest.py
 
         - name: Mezcla release branch -> main
           if: ${{ success() }}
