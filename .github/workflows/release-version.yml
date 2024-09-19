@@ -1,0 +1,73 @@
+name: featureToDevelop
+
+on:
+    push:
+        branches: ['develop']
+
+jobs:
+    job1:
+        name: Ejecutar Pruebas Unitarias
+        runs-on: ubuntu-latest
+        if: ${{ contains(github.event.head_commit.message, '(liberar version)') }}
+        steps:
+        - name: Checkout de repositorio
+          uses: actions/checkout@v2
+          with:
+            ref: develop
+
+        - name: Configuracion de entorno python
+          if: ${{ success() }}
+          uses: actions/setup-python@v4
+          with:
+              python-version: '3.7'
+
+        - name: Instalacion de librerias y dependencias
+          if: ${{ success() }}
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+        - name: Crear rama
+          run: |
+            git checkout -b release
+            git push -f -u origin release
+
+        - name: Mezcla develop -> release branch
+          if: ${{ success() }}
+          uses: tukasz/direct-merge-action@master
+          with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            source-branch: develop
+            target-branch: release
+
+        - name: Verificar si el merge de develop al release branch fue exitoso
+          if: ${{ success() }}
+          run: echo "La mezcla de develop al release branch se realizo correctamente"
+
+        - name: Verificar si el merge de develop al release branch fallo
+          if: ${{ failure() }}
+          run: |
+            echo "La mezcla de develop al release branch fallo."
+            exit 1
+
+        - name: Correr pruebas
+          if: ${{ success() }}
+          run: python -m unittest discover -s tests --verbose
+
+        - name: Mezcla release branch -> main
+          if: ${{ success() }}
+          uses: tukasz/direct-merge-action@master
+          with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            source-branch: release
+            target-branch: main
+
+        - name: Verificar si el merge del release branch a main fue exitoso y borrar release branch
+          if: ${{ success() }}
+          run: |
+            echo "La mezcla del release branch a main se realizo correctamente"
+            git push origin -d release
+        
+        - name: Verificar si el merge del release branch a main fallo
+          if: ${{ failure() }}
+          run: echo "La mezcla del release branch a main fallo"
