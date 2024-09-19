@@ -72,4 +72,6 @@ jobs:
         
         - name: Verificar si el merge del release branch a main fallo
           if: ${{ failure() }}
-          run: echo "La mezcla del release branch a main fallo"
+          run: |
+            echo "La mezcla del release branch a main fallo"
+            git push origin -d release
